@@ -102,10 +102,21 @@ public class SeatPanel extends JFrame {
 
         seatButton.addActionListener(e -> {
             if ("empty".equals(seat.getStatus())) {
-                int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận đặt ghế " + seatNum + "?",
-                        "Xác nhận", JOptionPane.OK_CANCEL_OPTION);
-                if (confirm == JOptionPane.OK_OPTION) {
-                    if (!selectedSeats.contains(seatNum)) {
+                if (selectedSeats.contains(seatNum)) {
+                    // Bỏ chọn ghế
+                    int confirm = JOptionPane.showConfirmDialog(this, "Bạn muốn bỏ chọn ghế " + seatNum + "?",
+                            "Xác nhận", JOptionPane.OK_CANCEL_OPTION);
+                    if (confirm == JOptionPane.OK_OPTION) {
+                        selectedSeats.remove(seatNum);
+                        seatButton.setBackground(getSeatColor(seat, seatNum)); // Trả lại màu gốc
+                        seatButton.setToolTipText(getSeatTooltip(seat));
+                        seatButton.repaint();
+                    }
+                } else {
+                    // Chọn ghế
+                    int confirm = JOptionPane.showConfirmDialog(this, "Xác nhận đặt ghế " + seatNum + "?",
+                            "Xác nhận", JOptionPane.OK_CANCEL_OPTION);
+                    if (confirm == JOptionPane.OK_OPTION) {
                         selectedSeats.add(seatNum);
                         seatButton.setBackground(SELECTED_COLOR);
                         seatButton.setToolTipText("Ghế bạn đã chọn");
