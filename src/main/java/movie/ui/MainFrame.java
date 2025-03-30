@@ -1,8 +1,8 @@
-package main.java.com.movie.ui;
+package movie.ui;
 
-import main.java.com.movie.db.Database;
-import main.java.com.movie.model.Movie;
-import main.java.com.movie.util.CalendarUtil;
+import movie.db.Database;
+import movie.model.Movie;
+import movie.util.CalendarUtil;
 
 import javax.swing.*;
 import java.awt.*;

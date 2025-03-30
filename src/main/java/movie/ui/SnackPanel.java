@@ -1,4 +1,4 @@
-package main.java.com.movie.ui;
+package movie.ui;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

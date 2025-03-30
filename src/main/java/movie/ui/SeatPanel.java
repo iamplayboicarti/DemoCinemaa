@@ -1,7 +1,7 @@
-package main.java.com.movie.ui;
+package movie.ui;
 
-import main.java.com.movie.db.Database;
-import main.java.com.movie.model.Seat;
+import movie.db.Database;
+import movie.model.Seat;
 
 import javax.swing.*;
 import java.awt.*;

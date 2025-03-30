@@ -1,7 +1,7 @@
-package main.java.com.movie.ui;
+package movie.ui;
 
-import main.java.com.movie.db.Database;
-import main.java.com.movie.model.Movie;
+import movie.db.Database;
+import movie.model.Movie;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +37,7 @@ public class MoviePanel extends JPanel {
         cardPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
 
         // Load ảnh phim (tự scale kích thước)
-        ImageIcon icon = new ImageIcon("src/resources/images/" + movie.getImage());
+        ImageIcon icon = new ImageIcon("src/main/java/resources/images/" + movie.getImage());
         Image img = icon.getImage().getScaledInstance(180, 200, Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(img));
 
