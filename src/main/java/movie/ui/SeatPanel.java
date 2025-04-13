@@ -14,19 +14,19 @@ public class SeatPanel extends JFrame {
     private int movieId;
     private JPanel seatGrid;
 
-    // Bảng màu mới
-    private static final Color BOOKED_COLOR = new Color(255, 0, 0);       // Red
-    private static final Color NORMAL_COLOR = new Color(186, 85, 211);    // Medium Orchid (tím hồng)
-    private static final Color VIP_COLOR = new Color(255, 182, 193);      // Light Pink (hồng nhạt)
-    private static final Color SWEETBOX_COLOR = new Color(255, 140, 0);   // Dark Orange (cam)
-    private static final Color SELECTED_COLOR = new Color(50, 205, 50);   // Lime Green (xanh lá cây)
-    private static final Color SCREEN_COLOR = new Color(50, 50, 50);      // Dark gray
-    private static final Color BACKGROUND_COLOR = new Color(245, 245, 245); // Light gray
+    // Constants
+    private static final Color BOOKED_COLOR = new Color(255, 0, 0);
+    private static final Color NORMAL_COLOR = new Color(186, 85, 211);
+    private static final Color VIP_COLOR = new Color(255, 182, 193);
+    private static final Color SWEETBOX_COLOR = new Color(255, 140, 0);
+    private static final Color SELECTED_COLOR = new Color(50, 205, 50);
+    private static final Color HEADER_COLOR = new  Color(41, 128, 185);
+    private static final Color BACKGROUND_COLOR = new Color(245, 245, 245);
 
     public SeatPanel(int movieId) {
         this.movieId = movieId;
         setTitle("Chọn Ghế Ngồi");
-        setSize(700, 500);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setBackground(BACKGROUND_COLOR);
@@ -35,11 +35,14 @@ public class SeatPanel extends JFrame {
         setVisible(true);
     }
 
+    // khởi tạo ui chỗ ngồi
     private void initializeUI() {
         List<Seat> seats = Database.getSeatsByMovieId(movieId);
         Map<String, Seat> seatMap = seats.stream().collect(Collectors.toMap(Seat::getSeatNumber, seat -> seat));
+        JPanel centeringPanel = new JPanel(new GridBagLayout());
+        centeringPanel.setBackground(BACKGROUND_COLOR);
 
-        // Sử dụng GridBagLayout thay vì GridLayout
+        // tạo grid layout ghế xem phim
         seatGrid = new JPanel(new GridBagLayout());
         seatGrid.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         seatGrid.setBackground(BACKGROUND_COLOR);
@@ -69,11 +72,29 @@ public class SeatPanel extends JFrame {
             seatGrid.add(seatButton, gbc);
         }
 
-        add(createScreenPanel(), BorderLayout.NORTH);
-        add(seatGrid, BorderLayout.CENTER);
-        add(createControlPanel(), BorderLayout.SOUTH);
+        centeringPanel.add(seatGrid);
+
+        JPanel screenContainer = new JPanel(new GridBagLayout());
+        screenContainer.setBackground(BACKGROUND_COLOR);
+        GridBagConstraints screenGbc = new GridBagConstraints();
+        screenGbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JPanel screenPanel = createScreenPanel();
+        screenPanel.setPreferredSize(new Dimension(500, 40));
+        screenContainer.add(screenPanel, screenGbc);
+
+        JPanel mainContent = new JPanel(new BorderLayout(0, 20));
+        mainContent.setBackground(BACKGROUND_COLOR);
+        mainContent.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
+
+        mainContent.add(screenContainer, BorderLayout.NORTH);
+        mainContent.add(centeringPanel, BorderLayout.CENTER);
+        mainContent.add(createControlPanel(), BorderLayout.SOUTH);
+
+        add(mainContent);
     }
 
+    // tạo ghế
     private JButton createSeatButton(Seat seat, String seatNum) {
         JButton seatButton = new JButton(seatNum) {
             @Override
@@ -88,13 +109,12 @@ public class SeatPanel extends JFrame {
         };
         seatButton.setBackground(getSeatColor(seat, seatNum));
 
-        // Điều chỉnh kích thước và font dựa trên loại ghế
         if (seatNum.startsWith("G")) { // Ghế Sweetbox (hàng G)
-            seatButton.setPreferredSize(new Dimension(80, 50)); // Gấp đôi kích thước ghế thường
-            seatButton.setFont(new Font("Arial", Font.PLAIN, 14)); // Tăng cỡ chữ
+            seatButton.setPreferredSize(new Dimension(100, 60));
+            seatButton.setFont(new Font("Arial", Font.PLAIN, 16));
         } else { // Ghế thường và VIP
-            seatButton.setPreferredSize(new Dimension(40, 25)); // Kích thước mặc định
-            seatButton.setFont(new Font("Arial", Font.PLAIN, 10));
+            seatButton.setPreferredSize(new Dimension(50, 35));
+            seatButton.setFont(new Font("Arial", Font.PLAIN, 12));
         }
 
         seatButton.setFocusPainted(false);
@@ -129,6 +149,7 @@ public class SeatPanel extends JFrame {
         return seatButton;
     }
 
+    // set màu cho các loại ghế
     private Color getSeatColor(Seat seat, String seatNum) {
         if ("booked".equals(seat.getStatus())) {
             return BOOKED_COLOR;
@@ -143,6 +164,7 @@ public class SeatPanel extends JFrame {
         }
     }
 
+    // tạo chú thích ghế
     private String getSeatTooltip(Seat seat) {
         if ("booked".equals(seat.getStatus())) {
             return "Ghế đã đặt";
@@ -157,27 +179,33 @@ public class SeatPanel extends JFrame {
         }
     }
 
+    // tạo màn hình chính
     private JPanel createScreenPanel() {
         JPanel screenPanel = new JPanel();
-        screenPanel.setBackground(SCREEN_COLOR);
-        screenPanel.setPreferredSize(new Dimension(0, 40));
-        screenPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        screenPanel.setBackground(HEADER_COLOR);
+        screenPanel.setPreferredSize(new Dimension(500, 50)); // Make screen bigger for fullscreen
+        screenPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        JLabel screenLabel = new JLabel("MÀN HÌNH", SwingConstants.CENTER);
+        JLabel screenLabel = new JLabel("DANH SÁCH GHẾ", SwingConstants.CENTER);
         screenLabel.setForeground(Color.WHITE);
-        screenLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        screenLabel.setFont(new Font("Arial", Font.BOLD, 16)); // Larger font for fullscreen
         screenPanel.add(screenLabel);
 
         return screenPanel;
     }
 
+
     private JPanel createControlPanel() {
-        JPanel controlPanel = new JPanel(new BorderLayout());
+        JPanel controlWrapper = new JPanel(new GridBagLayout());
+        controlWrapper.setBackground(BACKGROUND_COLOR);
+
+        JPanel controlPanel = new JPanel(new BorderLayout(20, 0));
         controlPanel.setBackground(BACKGROUND_COLOR);
         controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        controlPanel.setPreferredSize(new Dimension(600, 100));
 
         // Legend chia thành 2 hàng (3 + 2)
-        JPanel legendPanel = new JPanel(new GridLayout(2, 3, 20, 5));
+        JPanel legendPanel = new JPanel(new GridLayout(2, 3, 30, 10));
         legendPanel.setBackground(BACKGROUND_COLOR);
         legendPanel.add(createLegendItem("Ghế đã đặt", BOOKED_COLOR, true));
         legendPanel.add(createLegendItem("Ghế thường", NORMAL_COLOR, false));
@@ -189,7 +217,8 @@ public class SeatPanel extends JFrame {
         proceedButton.setBackground(new Color(30, 144, 255));
         proceedButton.setForeground(Color.WHITE);
         proceedButton.setFocusPainted(false);
-        proceedButton.setPreferredSize(new Dimension(100, 30));
+        proceedButton.setPreferredSize(new Dimension(120, 40)); // Larger button for fullscreen
+        proceedButton.setFont(new Font("Arial", Font.BOLD, 14)); // Larger font
         proceedButton.addActionListener(e -> {
             if (!selectedSeats.isEmpty()) {
                 new SnackPanel(movieId, selectedSeats);
@@ -202,7 +231,9 @@ public class SeatPanel extends JFrame {
 
         controlPanel.add(legendPanel, BorderLayout.CENTER);
         controlPanel.add(proceedButton, BorderLayout.EAST);
-        return controlPanel;
+
+        controlWrapper.add(controlPanel);
+        return controlWrapper;
     }
 
     private JPanel createLegendItem(String text, Color color, boolean hasCross) {
@@ -222,10 +253,10 @@ public class SeatPanel extends JFrame {
         };
         colorBox.setOpaque(true);
         colorBox.setBackground(color);
-        colorBox.setPreferredSize(new Dimension(15, 15));
+        colorBox.setPreferredSize(new Dimension(20, 20)); // Larger color box for fullscreen
 
         JLabel label = new JLabel(text);
-        label.setFont(new Font("Arial", Font.PLAIN, 12));
+        label.setFont(new Font("Arial", Font.PLAIN, 14)); // Larger font for fullscreen
 
         itemPanel.add(colorBox);
         itemPanel.add(label);
