@@ -2,62 +2,57 @@ CREATE DATABASE movie_db;
 USE movie_db;
 
 CREATE TABLE movies (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255),
-    image VARCHAR(255),
-    show_date DATE,
-    status ENUM('upcoming', 'showing', 'ongoing') DEFAULT 'upcoming'
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        title VARCHAR(255),
+                        image VARCHAR(255),
+                        show_date DATE,
+                        status ENUM('upcoming', 'showing', 'ongoing') DEFAULT 'upcoming'
 );
 
 CREATE TABLE seats (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    movie_id INT,
-    seat_number VARCHAR(10),
-    status ENUM('empty', 'booked', 'occupied') DEFAULT 'empty',
-    is_couple BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (movie_id) REFERENCES movies(id)
+                       id INT AUTO_INCREMENT PRIMARY KEY,
+                       movie_id INT,
+                       seat_number VARCHAR(10),
+                       status ENUM('empty', 'booked', 'occupied') DEFAULT 'empty',
+                       is_couple BOOLEAN DEFAULT FALSE,
+                       FOREIGN KEY (movie_id) REFERENCES movies(id)
 );
 
 CREATE TABLE orders (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    movie_id INT,
-    seat_ids VARCHAR(255),
-    snack_items VARCHAR(255),
-    total_price DOUBLE,
-    payment_method ENUM('cash', 'transfer'),
-    order_date DATETIME,
-    FOREIGN KEY (movie_id) REFERENCES movies(id)
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        movie_id INT,
+                        seat_ids VARCHAR(255),
+                        snack_items VARCHAR(255),
+                        total_price DOUBLE,
+                        payment_method ENUM('cash', 'transfer'),
+                        order_date DATETIME,
+                        FOREIGN KEY (movie_id) REFERENCES movies(id)
 );
 
--- Dữ liệu mẫu (10 dòng mỗi bảng)
+-- Dữ liệu mẫu (10 dòng mỗi bảng) với ngày linh động
 INSERT INTO movies (title, image, show_date, status) VALUES
-('Phim 1', 'movie1.jpg', '2025-03-13', 'showing'),
-('Phim 2', 'movie2.jpg', '2025-03-13', 'showing'),
-('Phim 3', 'movie3.jpg', '2025-03-14', 'upcoming'),
-('Phim 4', 'movie4.jpg', '2025-03-14', 'ongoing'),
-('Phim 5', 'movie5.jpg', '2025-03-15', 'showing'),
-('Phim 6', 'movie6.jpg', '2025-03-15', 'upcoming'),
-('Phim 7', 'movie7.jpg', '2025-03-16', 'ongoing'),
-('Phim 8', 'movie8.jpg', '2025-03-16', 'showing'),
-('Phim 9', 'movie9.jpg', '2025-03-17', 'upcoming'),
-('Phim 10', 'movie10.jpg', '2025-03-17', 'showing');
-
+                                                         ('Phim 1', 'movie1.jpg', CURDATE(), 'showing'),
+                                                         ('Phim 2', 'movie2.jpg', CURDATE(), 'showing'),
+                                                         ('Phim 3', 'movie3.jpg', CURDATE() + INTERVAL 1 DAY, 'upcoming'),
+                                                         ('Phim 4', 'movie4.jpg', CURDATE() + INTERVAL 1 DAY, 'ongoing'),
+                                                         ('Phim 5', 'movie5.jpg', CURDATE() + INTERVAL 2 DAY, 'showing'),
+                                                         ('Phim 6', 'movie6.jpg', CURDATE() + INTERVAL 2 DAY, 'upcoming'),
+                                                         ('Phim 7', 'movie7.jpg', CURDATE() + INTERVAL 3 DAY, 'ongoing'),
+                                                         ('Phim 8', 'movie8.jpg', CURDATE() + INTERVAL 3 DAY, 'showing'),
+                                                         ('Phim 9', 'movie9.jpg', CURDATE() + INTERVAL 4 DAY, 'upcoming'),
+                                                         ('Phim 10', 'movie10.jpg', CURDATE() + INTERVAL 4 DAY, 'showing');
 
 INSERT INTO orders (movie_id, seat_ids, snack_items, total_price, payment_method, order_date) VALUES
-(1, 'A2', 'Coca:1,Phomai:1', 150000, 'cash', '2025-03-13 10:00:00'),
-(1, 'B3', 'Pepsi:2', 100000, 'transfer', '2025-03-13 11:00:00'),
-(2, 'A2', 'Mirinda:1,Mix:1', 130000, 'cash', '2025-03-13 12:00:00'),
-(2, 'B3', 'Combo 1 Bắp 2 Nước:1', 70000, 'transfer', '2025-03-13 13:00:00'),
-(3, 'A1', 'Coca:1', 50000, 'cash', '2025-03-14 14:00:00'),
-(4, 'A3', 'Phomai:1', 80000, 'transfer', '2025-03-14 15:00:00'),
-(5, 'B1', 'Combo 2 Bắp 1 Nước:1', 90000, 'cash', '2025-03-15 16:00:00'),
-(6, 'A4', 'Bơ:1', 60000, 'transfer', '2025-03-15 17:00:00'),
-(7, 'B2', 'Dâu:1', 70000, 'cash', '2025-03-16 18:00:00'),
-(8, 'C1', 'Socola:1', 80000, 'transfer', '2025-03-16 19:00:00');
-
-
--- Xóa dữ liệu ghế cũ để tránh trùng
-DELETE FROM seats;
+                                                                                                  (1, 'A2', 'Coca:1,Phomai:1', 150000, 'cash', CURDATE() + INTERVAL 0 DAY + INTERVAL 10 HOUR),
+                                                                                                  (1, 'B3', 'Pepsi:2', 100000, 'transfer', CURDATE() + INTERVAL 0 DAY + INTERVAL 11 HOUR),
+                                                                                                  (2, 'A2', 'Mirinda:1,Mix:1', 130000, 'cash', CURDATE() + INTERVAL 0 DAY + INTERVAL 12 HOUR),
+                                                                                                  (2, 'B3', 'Combo 1 Bắp 2 Nước:1', 70000, 'transfer', CURDATE() + INTERVAL 0 DAY + INTERVAL 13 HOUR),
+                                                                                                  (3, 'A1', 'Coca:1', 50000, 'cash', CURDATE() + INTERVAL 1 DAY + INTERVAL 14 HOUR),
+                                                                                                  (4, 'A3', 'Phomai:1', 80000, 'transfer', CURDATE() + INTERVAL 1 DAY + INTERVAL 15 HOUR),
+                                                                                                  (5, 'B1', 'Combo 2 Bắp 1 Nước:1', 90000, 'cash', CURDATE() + INTERVAL 2 DAY + INTERVAL 16 HOUR),
+                                                                                                  (6, 'A4', 'Bơ:1', 60000, 'transfer', CURDATE() + INTERVAL 2 DAY + INTERVAL 17 HOUR),
+                                                                                                  (7, 'B2', 'Dâu:1', 70000, 'cash', CURDATE() + INTERVAL 3 DAY + INTERVAL 18 HOUR),
+                                                                                                  (8, 'C1', 'Socola:1', 80000, 'transfer', CURDATE() + INTERVAL 3 DAY + INTERVAL 19 HOUR);
 
 -- Thêm 48 ghế cho mỗi phim (movie_id từ 1 đến 10)
 INSERT INTO seats (movie_id, seat_number, status, is_couple) VALUES

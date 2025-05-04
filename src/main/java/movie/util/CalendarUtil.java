@@ -1,4 +1,4 @@
-package main.java.com.movie.util;
+package movie.util;
 
 
 import java.util.Calendar;

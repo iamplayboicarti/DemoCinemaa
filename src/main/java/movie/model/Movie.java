@@ -1,4 +1,4 @@
-package main.java.com.movie.model;
+package movie.model;
 
 
 

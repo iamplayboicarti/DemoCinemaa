@@ -1,7 +1,7 @@
-package main.java.com.movie.db;
+package movie.db;
 
-import main.java.com.movie.model.Movie;
-import main.java.com.movie.model.Seat;
+import movie.model.Movie;
+import movie.model.Seat;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Date;
 public class Database {
     private static final String URL = "jdbc:mysql://localhost:3306/movie_db";
     private static final String USER = "root";
-    private static final String PASSWORD = "petermysql"; // Thay đổi theo MySQL của bạn
+    private static final String PASSWORD = "yui4727"; // Thay đổi theo MySQL của bạn
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -91,5 +91,83 @@ public class Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+// Add these methods to your existing Database class
+
+    public static int saveOrder(int movieId, String seatIds, String snackItems, double totalPrice, String paymentMethod, String email) {
+        int orderId = 0;
+        try {
+            Connection conn = getConnection();
+            String sql = "INSERT INTO orders (movie_id, seat_ids, snack_items, total_price, payment_method, email, order_date) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, movieId);
+            stmt.setString(2, seatIds);
+            stmt.setString(3, snackItems);
+            stmt.setDouble(4, totalPrice);
+            stmt.setString(5, paymentMethod);
+            stmt.setString(6, email);
+            stmt.executeUpdate();
+
+            // Get the generated order ID
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                orderId = rs.getInt(1);
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orderId;
+    }
+
+    public static String getMovieTitle(int movieId) {
+        String title = "";
+        try {
+            Connection conn = getConnection();
+            String sql = "SELECT title FROM movies WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, movieId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                title = rs.getString("title");
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return title;
+    }
+
+    public static String getMovieShowtime(int movieId) {
+        String showtime = "";
+        try {
+            Connection conn = getConnection();
+            String sql = "SELECT show_date FROM movies WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, movieId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                java.util.Date date = rs.getDate("show_date");
+                if (date != null) {
+                    showtime = new java.text.SimpleDateFormat("dd/MM/yyyy").format(date);
+                }
+            }
+
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return showtime;
     }
 }
